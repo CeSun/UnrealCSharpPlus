@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
+using Script.Dynamic;
 
 namespace Script.CoreUObject
 {
@@ -12,7 +13,7 @@ namespace Script.CoreUObject
 
         private static bool IsOverrideMethod(MethodInfo InMethodInfo)
         {
-            if (InMethodInfo.DeclaringType.IsDefined(typeof(OverrideAttribute), true))
+            if (!InMethodInfo.IsDefined(typeof(UFunctionAttribute), false) && InMethodInfo.DeclaringType.IsDefined(typeof(UClassAttribute), true))
             {
                 if (InMethodInfo.IsVirtual == false)
                     return false;
