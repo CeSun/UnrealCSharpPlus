@@ -12,4 +12,5 @@ namespace Script.Dynamic
 
         private string Value { get; set; }
     }
+
 }

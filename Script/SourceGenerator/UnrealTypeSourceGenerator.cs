@@ -41,7 +41,7 @@ namespace SourceGenerator
 
         private static string GetPathName(string Name)
         {
-            return "/Script/CoreUObject." + (Name.EndsWith("_C") ? Name : Name.Substring(1));
+            return $"/Script/CoreUObject.{Name.Substring(1)}";
         }
 
         public void Execute(GeneratorExecutionContext Context)
@@ -68,7 +68,7 @@ namespace SourceGenerator
 
                 source += "\n{";
 
-                source += $"\n\t[{string.Join(", ", @interface.Attributes)}]";
+                source += $"\n\t[{string.Join(", ", @interface.Attributes)}, NativeClass]";
 
                 source += $"\n\tpublic partial class U{@interface.Name.Substring(1)} : UInterface ";
 
@@ -423,9 +423,9 @@ namespace SourceGenerator
 
                     if (bIsUClass)
                     {
-                        if (baseTypeName.EndsWith("_C"))
+                        if (baseTypeName.StartsWith("A"))
                         {
-                            if (name.EndsWith("_C") == false)
+                            if ( name.StartsWith("A") == false)
                             {
                                 hasError = true;
 
@@ -433,25 +433,12 @@ namespace SourceGenerator
                                     Location.Create(
                                         Syntax.Identifier.SyntaxTree ?? throw new InvalidOperationException(),
                                         Syntax.Identifier.Span),
-                                    $"The name of UClass {name} must end with \"_C\""));
-                            }
-                        }
-                        else if (baseTypeName.StartsWith("A"))
-                        {
-                            if (name.EndsWith("_C") == false && name.StartsWith("A") == false)
-                            {
-                                hasError = true;
-
-                                Errors.Add(Diagnostic.Create(UnrealTypeSourceGenerator.ErrorTypeName,
-                                    Location.Create(
-                                        Syntax.Identifier.SyntaxTree ?? throw new InvalidOperationException(),
-                                        Syntax.Identifier.Span),
-                                    $"The name of UClass {name} must end with \"_C\" or start with \"A\""));
+                                    $"The name of UClass {name} must start with \"A\""));
                             }
                         }
                         else if (baseTypeName.StartsWith("U"))
                         {
-                            if (name.EndsWith("_C") == false && name.StartsWith("U") == false)
+                            if (name.StartsWith("U") == false)
                             {
                                 hasError = true;
 
@@ -459,7 +446,7 @@ namespace SourceGenerator
                                     Location.Create(
                                         Syntax.Identifier.SyntaxTree ?? throw new InvalidOperationException(),
                                         Syntax.Identifier.Span),
-                                    $"The name of UClass {name} must end with \"_C\" or start with \"U\""));
+                                    $"The name of UClass {name} must or start with \"U\""));
                             }
                         }
                     }
@@ -678,12 +665,7 @@ namespace SourceGenerator
                 {
                     var currentFileName = name + ".cs";
 
-                    if (bIsUClass && name.EndsWith("_C") == false)
-                    {
-                        currentFileName = currentFileName.Substring(1, currentFileName.Length - 1);
-                    }
-
-                    if (bIsUStruct || bIsUInterface)
+                    if (bIsUClass || bIsUStruct || bIsUInterface)
                     {
                         currentFileName = currentFileName.Substring(1, currentFileName.Length - 1);
                     }

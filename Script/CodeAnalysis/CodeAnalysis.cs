@@ -35,7 +35,8 @@ namespace CodeAnalysis
                 {
                     _dynamic = new Dictionary<string, List<string>>
                     {
-                        ["DynamicClass"] = new List<string>(),
+                        ["DynamicNativeClass"] = new List<string>(),
+                        ["DynamicBlueprintClass"] = new List<string>(),
                         ["DynamicStruct"] = new List<string>(),
                         ["DynamicEnum"] = new List<string>(),
                         ["DynamicInterface"] = new List<string>()
@@ -89,7 +90,8 @@ namespace CodeAnalysis
 
                 _dynamic = new Dictionary<string, List<string>>
                 {
-                    ["DynamicClass"] = new List<string>(),
+                    ["DynamicNativeClass"] = new List<string>(),
+                    ["DynamicBlueprintClass"] = new List<string>(),
                     ["DynamicStruct"] = new List<string>(),
                     ["DynamicEnum"] = new List<string>(),
                     ["DynamicInterface"] = new List<string>()
@@ -255,24 +257,21 @@ namespace CodeAnalysis
                     {
                         if (NameSpaceMember is ClassDeclarationSyntax ClassDeclaration)
                         {
-                            foreach (var AttributeList in ClassDeclaration.AttributeLists)
+                            if (ClassDeclaration.AttributeLists.Any(list => list.Attributes.Any(attribute => attribute.ToString().Equals("UClass"))))
                             {
-                                foreach (var Attribute in AttributeList.Attributes)
+                                if (ClassDeclaration.AttributeLists.Any(list => list.Attributes.Any(attribute => attribute.ToString().Equals("NativeClass"))))
                                 {
-                                    if (Attribute.ToString().Equals("UClass"))
-                                    {
-                                        _dynamic?["DynamicClass"].Add(ClassDeclaration.Identifier.ToString());
-
-                                        return;
-                                    }
-
-                                    if (Attribute.ToString().Equals("UStruct"))
-                                    {
-                                        _dynamic?["DynamicStruct"].Add(ClassDeclaration.Identifier.ToString());
-
-                                        return;
-                                    }
+                                    _dynamic?["DynamicNativeClass"].Add(ClassDeclaration.Identifier.ToString());
                                 }
+                                else
+                                {
+                                    _dynamic?["DynamicBlueprintClass"].Add(ClassDeclaration.Identifier.ToString());
+                                }
+                            }
+                            if (ClassDeclaration.AttributeLists.Any(list => list.Attributes.Any(attribute => attribute.ToString().Equals("UStruct"))))
+                            {
+
+                                _dynamic?["DynamicStruct"].Add(ClassDeclaration.Identifier.ToString());
                             }
                         }
                         else if (NameSpaceMember is InterfaceDeclarationSyntax InterfaceDeclaration)

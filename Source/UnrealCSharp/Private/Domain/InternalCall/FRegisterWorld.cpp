@@ -141,7 +141,8 @@ namespace
 					                                                  ? *FoundActorSpawnParameters
 					                                                  : FActorSpawnParameters());
 
-				return FCSharpEnvironment::GetEnvironment().Bind(Actor);
+				auto ptr =  FCSharpEnvironment::GetEnvironment().Bind(Actor);
+				return ptr;
 			}
 
 			return nullptr;

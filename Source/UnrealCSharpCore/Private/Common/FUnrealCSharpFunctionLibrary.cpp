@@ -97,6 +97,11 @@ FString FUnrealCSharpFunctionLibrary::GetFullClass(const UStruct* InStruct)
 		return TEXT("");
 	}
 
+	if (FDynamicClassGenerator::IsDynamicBlueprintGeneratedClass(InStruct))
+	{
+		return Encode(FString::Printf(TEXT("%s%s"), InStruct->GetPrefixCPP(),*InStruct->GetName()));
+	}
+
 	return Encode(FString::Printf(TEXT(
 		              "%s%s"
 	              ),
