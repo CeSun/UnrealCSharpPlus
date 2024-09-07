@@ -10,8 +10,20 @@ namespace Script.CoreUObject
     {
         private static bool IsOverrideType(Type InType) => InType.IsDefined(typeof(OverrideAttribute), true);
 
-        private static bool IsOverrideMethod(MethodInfo InMethodInfo) =>
-            InMethodInfo.IsDefined(typeof(OverrideAttribute), false);
+        private static bool IsOverrideMethod(MethodInfo InMethodInfo)
+        {
+            if (InMethodInfo.DeclaringType.IsDefined(typeof(OverrideAttribute), true))
+            {
+                if (InMethodInfo.IsVirtual == false)
+                    return false;
+                return true;
+            }
+            else
+            {
+                return InMethodInfo.IsDefined(typeof(OverrideAttribute), false);
+            }
+        }
+
 
         public static string GetPathName(Type InType) => InType.GetCustomAttribute<PathNameAttribute>(true)?.PathName;
 
